@@ -947,7 +947,8 @@ function calcCoop(){
   document.getElementById('annualSaaS').textContent=fmt(annualArr);
   document.getElementById('year1Total').textContent=fmt(year1);
   document.getElementById('totalDisc').textContent=fmt(totalDiscAmt);
-  document.getElementById('moduleRows').innerHTML=`<div class="mc b">IEP</div><div class="mc">${fmt(base)}</div><div class="mc">—</div><div class="mc r">${co.sped_students.toLocaleString()}</div><div class="mc r">${fmt(gross)}</div><div class="mc r b">${fmt(annualArr)}</div>`;
+  const activeSped = memberSchools.length>0 ? memberSchools.reduce((a,s)=>a+(s.sped||0),0) : co.sped_students;
+  document.getElementById('moduleRows').innerHTML=`<div class="mc b">IEP</div><div class="mc">${fmt(base/Math.max(memberSchools.length,1))}</div><div class="mc">varies</div><div class="mc r">${activeSped.toLocaleString()}</div><div class="mc r">${fmt(gross)}</div><div class="mc r b">${fmt(annualArr)}</div>`;
   document.getElementById('saasGross').textContent=fmt(gross);
   document.getElementById('bundleRow').style.display='none';
   document.getElementById('termPctLbl').textContent=(termPct*100).toFixed(0)+'%';
@@ -976,21 +977,20 @@ let memberSchools = []; // active editable list
 function fmtC(n){ return n===0||isNaN(n)?'—':'$'+Math.round(n).toLocaleString(); }
 
 function loadMemberSchools(coopData){
-  // Load from co-op master data
   memberSchools = (coopData.member_schools_data||[])
-    .filter(s=>s.name&&s.name!=='nan')
+    .filter(s=>s.name&&s.name!=='nan'&&s.name!=='Total')
     .map((s,i)=>({
       id: i,
       name: s.name,
       enrollment: s.enrollment||0,
       sped: s.sped||0,
       tier: s.tier||'T0',
-      base_floor: s.base_floor||0,
-      base_target: s.base_target||0,
-      base_list: s.base_list||0,
-      perstu_floor: s.perstu_floor||0,
-      perstu_target: s.perstu_target||0,
-      perstu_list: s.perstu_list||0,
+      base_floor:   s.base_floor||0,
+      base_target:  s.base_target||0,
+      base_list:    s.base_list||0,
+      rate_floor:   s.rate_floor||0,
+      rate_target:  s.rate_target||0,
+      rate_list:    s.rate_list||0,
       impl_fee: s.impl_fee||0,
     }));
   renderMemberTable();
