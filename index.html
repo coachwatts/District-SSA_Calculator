@@ -927,7 +927,7 @@ function calcCoop(){
   const implIncl=document.getElementById('coopImpl').value==='yes';
   const discPct=(parseFloat(document.getElementById('coopDisc').value)||0)/100;
   const termPct=TERM_DISC_C[term]||0;
-  const maxDisc=co.max_discount;
+  let maxDisc=co.max_discount;
 
   // Use member school table totals if populated, else fall back to co-op summary
   let base, perStu, mobileTotal=0;
