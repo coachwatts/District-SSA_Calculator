@@ -222,11 +222,11 @@ h1{font-size:17px;font-weight:700;color:#111}
 
   <div>
     <div class="sec">Discount</div>
-    <div class="dr"><label>AE Discount (%)</label>
+    <div class="dr"><label>Base Fee Discount (%)</label>
       <input type="number" id="coopDisc" value="0" min="0" max="35" step="0.5" oninput="calcCoop()">
       <span class="dv" id="coopDiscVal">—</span>
     </div>
-    <div style="font-size:10px;color:#9ca3af;margin-top:2px;font-style:italic" id="coopMaxDiscNote">Max discount for this tier: —</div>
+    <div style="font-size:10px;color:#9ca3af;margin-top:2px;font-style:italic" id="coopMaxDiscNote" title="Discount applies to sum of base fees only — per-student fees are always at full rate">Max discount for this tier: —</div>
   </div>
 
   <div>
@@ -306,9 +306,9 @@ h1{font-size:17px;font-weight:700;color:#111}
       <div style="font-size:11px;color:#6b7280">Discount applies to base fee only &nbsp;·&nbsp; per-student at full rate</div>
     </div>
     <div class="coop-summary-bar">
-      <div class="csb"><div class="cl">Total Base Fees</div><div class="cv" id="memberBaseTotal">—</div></div>
-      <div class="csb"><div class="cl">Total Per-SPED</div><div class="cv" id="memberPerStuTotal">—</div></div>
-      <div class="csb blue"><div class="cl">Gross ARR</div><div class="cv" id="memberGrossTotal">—</div></div>
+      <div class="csb"><div class="cl">Sum of Base Fees</div><div class="cv" id="memberBaseTotal">—</div></div>
+      <div class="csb"><div class="cl">Sum of Per-SPED Fees</div><div class="cv" id="memberPerStuTotal">—</div></div>
+      <div class="csb blue"><div class="cl">Gross (before discount)</div><div class="cv" id="memberGrossTotal">—</div></div>
     </div>
     <div class="member-table-wrap" style="max-height:320px;overflow-y:auto">
       <table class="member-table">
@@ -318,9 +318,9 @@ h1{font-size:17px;font-weight:700;color:#111}
             <th class="r">Enroll</th>
             <th>Tier</th>
             <th class="r">SPED</th>
-            <th class="r">Base (Target)</th>
-            <th class="r">Per-SPED</th>
-            <th class="r">Row Total</th>
+            <th class="r">IEP Base Fee</th>
+            <th class="r">Per-SPED Total</th>
+            <th class="r">School Gross</th>
             <th></th>
           </tr>
         </thead>
@@ -898,7 +898,8 @@ function selectCoop(idx){
   document.getElementById('coopMaxDisc').textContent=(co.max_discount*100).toFixed(0)+'%';
   document.getElementById('coopPriority').textContent=co.priority||'—';
   document.getElementById('coopMaxDiscNote').textContent='Max AE discount for '+co.tier+': '+(co.max_discount*100).toFixed(0)+'%';
-  document.getElementById('coopDisc').value=0;
+  // Auto-apply tier max discount
+  document.getElementById('coopDisc').value=(co.max_discount*100).toFixed(0);
   // Load member school table
   loadMemberSchools(co);
   document.getElementById('memberSchoolCard').style.display='block';
