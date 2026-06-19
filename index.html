@@ -912,9 +912,10 @@ function selectCoop(idx){
   document.getElementById('coopMaxDiscNote').textContent='Max AE discount for '+co.tier+': '+(co.max_discount*100).toFixed(0)+'%';
   // Auto-apply tier max discount
   document.getElementById('coopDisc').value=(co.max_discount*100).toFixed(0);
-  // Load member school table
-  loadMemberSchools(co);
+  // Show card first, then load and render
   document.getElementById('memberSchoolCard').style.display='block';
+  loadMemberSchools(co);
+  renderMemberTable();
   calcCoop();
 }
 
@@ -1022,7 +1023,7 @@ function loadMemberSchools(coopData){
       mobile_list:   s.mobile_list||0,
       impl_fee:      s.impl_fee||0,
     }));
-  renderMemberTable();
+  // renderMemberTable called by caller after showing the card
 }
 
 function getMemberBase(s, rc){ return rc==='Floor'?s.base_floor:rc==='List'?s.base_list:s.base_target; }
@@ -1063,19 +1064,16 @@ function renderMemberTable(){
   const spedEl = document.getElementById('coopSped');
   if(spedEl) spedEl.textContent = liveSped.toLocaleString();
   updateMemberTotals();
-  calcCoop();
 }
 
 function updateSped(idx, val){
   memberSchools[idx].sped = parseInt(val)||0;
-  updateMemberTotals();
   renderMemberTable();
   calcCoop();
 }
 
 function removeSchool(idx){
   memberSchools.splice(idx,1);
-  // Re-index ids
   memberSchools.forEach((s,i)=>s.id=i);
   renderMemberTable();
   calcCoop();
