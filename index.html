@@ -965,6 +965,7 @@ function calcCoop(){
   const year1=annualArr+implFee;
   const totalDiscAmt=aeDiscAmt+termDiscAmt+(implIncl?0:IMPL_FEES[co.tier]||5000);
   const overMax=discPct>maxDisc;
+  const activeSped = memberSchools.length>0 ? memberSchools.reduce((a,s)=>a+(s.sped||0),0) : co.sped_students;
 
   document.getElementById('approvalBadge').textContent=overMax?'⚠ Exceeds tier max — approval required':'✓ Within guardrails';
   document.getElementById('approvalBadge').className='al '+(overMax?'a':'g');
@@ -973,7 +974,6 @@ function calcCoop(){
   document.getElementById('annualSaaS').textContent=fmt(annualArr);
   document.getElementById('year1Total').textContent=fmt(year1);
   document.getElementById('totalDisc').textContent=fmt(totalDiscAmt);
-  const activeSped = memberSchools.length>0 ? memberSchools.reduce((a,s)=>a+(s.sped||0),0) : co.sped_students;
   document.getElementById('moduleRows').innerHTML=`<div class="mc b">IEP</div><div class="mc">${fmt(base/Math.max(memberSchools.length,1))}</div><div class="mc">varies</div><div class="mc r">${activeSped.toLocaleString()}</div><div class="mc r">${fmt(gross)}</div><div class="mc r b">${fmt(annualArr)}</div>`;
   document.getElementById('saasGross').textContent=fmt(gross);
   document.getElementById('bundleRow').style.display='none';
