@@ -617,7 +617,7 @@ function showCoopProposal(){
   const annualRow=`<tr>
     <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">K12-004</td>
     <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">IEP Module</td>
-    <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:center">${co.sped_students.toLocaleString()}</td>
+    <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:center">${activeSped.toLocaleString()}</td>
     <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">Annually</td>
     <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right">${fmt(s.base)} base + ${fmt(s.perStu)} per-SPED</td>
     <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right">${fmt(s.gross)}</td>
@@ -905,7 +905,7 @@ function selectCoop(idx){
   info.classList.add('show');
   document.getElementById('coopType').textContent=co.type;
   document.getElementById('coopMembers').textContent=co.member_schools.toLocaleString();
-  document.getElementById('coopSped').textContent=co.sped_students.toLocaleString();
+  document.getElementById('coopSped').textContent=co.sped_students.toLocaleString(); // updated after load
   document.getElementById('coopTier').textContent=co.tier;
   document.getElementById('coopMaxDisc').textContent=(co.max_discount*100).toFixed(0)+'%';
   document.getElementById('coopPriority').textContent=co.priority||'—';
@@ -969,7 +969,7 @@ function calcCoop(){
   document.getElementById('approvalBadge').textContent=overMax?'⚠ Exceeds tier max — approval required':'✓ Within guardrails';
   document.getElementById('approvalBadge').className='al '+(overMax?'a':'g');
   document.getElementById('mainTitle').textContent=co.name+' — Co-op Quote';
-  document.getElementById('mainSub').textContent=co.tier+' · '+rc+' · '+term+' Year'+(term==='1'?'':'s')+' · IEP · '+co.sped_students.toLocaleString()+' SPED';
+  document.getElementById('mainSub').textContent=co.tier+' · '+rc+' · '+term+' Year'+(term==='1'?'':'s')+' · IEP · '+activeSped.toLocaleString()+' SPED · '+memberSchools.length+' schools';
   document.getElementById('annualSaaS').textContent=fmt(annualArr);
   document.getElementById('year1Total').textContent=fmt(year1);
   document.getElementById('totalDisc').textContent=fmt(totalDiscAmt);
@@ -1059,6 +1059,10 @@ function renderMemberTable(){
     </tr>`;
   }).join('');
 
+  // Sync left pane SPED count to live table total
+  const liveSped = memberSchools.reduce((a,s)=>a+(s.sped||0),0);
+  const spedEl = document.getElementById('coopSped');
+  if(spedEl) spedEl.textContent = liveSped.toLocaleString();
   updateMemberTotals();
 }
 
