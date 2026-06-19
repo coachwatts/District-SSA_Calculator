@@ -920,7 +920,6 @@ function selectCoop(idx){
 
 function calcCoop(){
   if(!currentCoop) return;
-  if(memberSchools.length>0) renderMemberTable();
   const co=currentCoop;
   const rc=document.getElementById('coopRateCard').value;
   const term=document.getElementById('coopTerm').value;
@@ -1064,6 +1063,7 @@ function renderMemberTable(){
   const spedEl = document.getElementById('coopSped');
   if(spedEl) spedEl.textContent = liveSped.toLocaleString();
   updateMemberTotals();
+  calcCoop();
 }
 
 function updateSped(idx, val){
