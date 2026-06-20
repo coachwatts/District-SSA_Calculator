@@ -63,6 +63,7 @@ input:checked+.slider:before{transform:translateX(16px)}
 
 .card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:1rem 1.25rem}
 .ct{font-size:13px;font-weight:700;color:#111;margin-bottom:0.75rem}
+.sticky-header{position:sticky;top:0;z-index:50;background:#fff;padding-top:1.25rem;padding-bottom:0.85rem;margin-top:-1.25rem;border-bottom:1px solid #f0f2f8}
 .sg{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:10px}
 .sc{border:1px solid #e5e7eb;border-radius:8px;padding:0.65rem 1rem}
 .sl{font-size:11px;color:#9ca3af;margin-bottom:3px}
@@ -114,6 +115,32 @@ h1{font-size:17px;font-weight:700;color:#111}
 .csb .cv{font-size:13px;font-weight:700;color:#111}
 .csb.blue{background:#eff6ff;border-color:#bfdbfe}.csb.blue .cv{color:#1d4ed8}
 .csb.purple{background:#fdf4ff;border-color:#e9d5ff}.csb.purple .cv{color:#7e22ce}
+.ramp-toggle-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem}
+.ramp-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:0.5rem}
+.ramp-table th{background:#f9fafb;padding:6px 8px;text-align:left;font-size:10px;text-transform:uppercase;color:#6b7280;border-bottom:1px solid #e5e7eb}
+.ramp-table th.r{text-align:right}
+.ramp-table td{padding:7px 8px;border-bottom:1px solid #f3f4f6}
+.ramp-table td.r{text-align:right}
+.ramp-table input[type=number]{width:64px;padding:3px 6px;border:1px solid #d1d5db;border-radius:4px;font-size:12px;text-align:right;background:#fffbeb}
+.ramp-table input[type=number]:focus{outline:none;border-color:#1a56db}
+.ramp-table .ramp-final{background:#eff6ff;font-weight:700;color:#1d4ed8}
+.ramp-summary{display:flex;gap:16px;margin-top:8px;font-size:11px;color:#6b7280}
+.ramp-summary strong{color:#111}
+.toggle-sw{position:relative;width:38px;height:20px;background:#d1d5db;border-radius:20px;cursor:pointer;transition:background 0.15s}
+.toggle-sw.on{background:#1a56db}
+.toggle-sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left 0.15s}
+.toggle-sw.on::after{left:20px}
+.acc{border-bottom:1px solid #dde1ec;padding-bottom:0.6rem;margin-bottom:0.6rem}
+.acc:last-child{border-bottom:none}
+.acc-hdr{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:2px 0;-webkit-tap-highlight-color:transparent;user-select:none}
+.acc-hdr .sec{margin-bottom:0}
+.acc-hdr .acc-arrow{font-size:10px;color:#9ca3af;transition:transform 0.15s}
+.acc.open .acc-hdr .acc-arrow{transform:rotate(90deg)}
+.acc-body{display:none;padding-top:8px}
+.acc.open .acc-body{display:block}
+.acc-badge{font-size:9px;background:#1a56db;color:#fff;padding:1px 6px;border-radius:10px;margin-left:6px;font-weight:700}
+.acc-badge.purple{background:#7e22ce}
+.acc-badge.amber{background:#d97706}
 .coop-info-row{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
 .coop-info-row .k{color:#6b7280}.coop-info-row .v{font-weight:700;color:#7e22ce}
 .tier-pill-coop{display:inline-flex;align-items:center;background:#fdf4ff;color:#7e22ce;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #e9d5ff}
@@ -166,13 +193,15 @@ h1{font-size:17px;font-weight:700;color:#111}
     </div>
   </div>
 
-  <div>
-    <div class="sec">Program Counts</div>
+  <div class="acc" id="accCounts">
+    <div class="acc-hdr" onclick="toggleAcc('accCounts')"><div class="sec">Program Counts</div><span class="acc-arrow">&#9656;</span></div>
+    <div class="acc-body">
     <div class="cnt-hdr"><span>Module</span><span>Override</span><span style="text-align:right">District</span><span style="text-align:right">Used</span></div>
     <div class="cr"><label>RTI Plans</label><input type="number" id="rtiOvr" placeholder="auto" oninput="calc()"><span class="from-data" id="rtiData">—</span><span class="used" id="rtiUsed">—</span></div>
     <div class="cr"><label>504 Plans</label><input type="number" id="p504Ovr" placeholder="auto" oninput="calc()"><span class="from-data" id="p504Data">—</span><span class="used" id="p504Used">—</span></div>
     <div class="cr"><label>LPAC / EL</label><input type="number" id="lpacOvr" placeholder="auto" oninput="calc()"><span class="from-data" id="lpacData">—</span><span class="used" id="lpacUsed">—</span></div>
     <div class="cr"><label>IEP Students</label><input type="number" id="iepOvr" placeholder="auto" oninput="calc()"><span class="from-data" id="iepData">—</span><span class="used" id="iepUsed">—</span></div>
+    </div>
   </div>
 
   </div><!-- end districtPanel -->
@@ -206,7 +235,7 @@ h1{font-size:17px;font-weight:700;color:#111}
       </select>
     </div>
     <div class="fg"><label>Contract Term</label>
-      <select id="coopTerm" onchange="calcCoop()">
+      <select id="coopTerm" onchange="calcCoop();showRampCardIfEligible();renderRampTable();">
         <option value="1" selected>1 Year</option>
         <option value="2">2 Years (3% disc.)</option>
         <option value="3">3 Years (5% disc.)</option>
@@ -236,8 +265,9 @@ h1{font-size:17px;font-weight:700;color:#111}
     <div style="font-size:10px;color:#9ca3af;margin-top:2px;font-style:italic" id="coopMaxDiscNote" title="Discount applies to sum of base fees only — per-student fees are always at full rate">Max discount for this tier: —</div>
   </div>
 
-  <div>
-    <div class="sec">Proposal Info</div>
+  <div class="acc" id="accPropC">
+    <div class="acc-hdr" onclick="toggleAcc('accPropC')"><div class="sec">Proposal Info</div><span class="acc-arrow">&#9656;</span></div>
+    <div class="acc-body">
     <div class="fg"><label>Street Address</label><input type="text" id="cpAddr" oninput="calcCoop()"></div>
     <div class="fg"><label>City, State ZIP</label><input type="text" id="cpCity" oninput="calcCoop()"></div>
     <div class="fg"><label>Primary Contact</label><input type="text" id="cpContact" oninput="calcCoop()"></div>
@@ -251,6 +281,7 @@ h1{font-size:17px;font-weight:700;color:#111}
       </select>
     </div>
     <div class="fg"><label>Notes</label><input type="text" id="cpComments" oninput="calcCoop()"></div>
+    </div>
   </div>
   </div><!-- end coopPanel -->
 
@@ -258,20 +289,23 @@ h1{font-size:17px;font-weight:700;color:#111}
   <div>
     <div class="sec">Quote Settings</div>
     <div class="fg"><label>Pricing Level</label><select id="rateCard" onchange="calc()"><option value="Floor">Floor</option><option value="Target">Target</option><option value="List" selected>List</option></select></div>
-    <div class="fg"><label>Contract Term</label><select id="term" onchange="calc()"><option value="1" selected>1 Year</option><option value="2">2 Years (3% disc.)</option><option value="3">3 Years (5% disc.)</option><option value="5">5 Years (8% disc.)</option></select></div>
+    <div class="fg"><label>Contract Term</label><select id="term" onchange="calc();showRampCardIfEligible();renderRampTable();"><option value="1" selected>1 Year</option><option value="2">2 Years (3% disc.)</option><option value="3">3 Years (5% disc.)</option><option value="5">5 Years (8% disc.)</option></select></div>
     <div class="fg"><label>Mobile Option</label><select id="mobile" onchange="calc()"><option value="none">None</option><option value="M1">M1 — Add-on annual (no enablement)</option><option value="M2">M2 — Add-on annual + enablement</option><option value="M3" selected>M3 — Bundle annual + enablement</option></select></div>
     <div class="fg"><label>Implementation</label><select id="impl" onchange="calc()"><option value="yes">Include</option><option value="no">Waive</option></select></div>
   </div>
 
-  <div>
-    <div class="sec">Discounts</div>
+  <div class="acc" id="accDiscD">
+    <div class="acc-hdr" onclick="toggleAcc('accDiscD')"><div class="sec">Discounts</div><span class="acc-arrow">&#9656;</span></div>
+    <div class="acc-body">
     <div class="dr"><label>Strategic / Competitive (%)</label><input type="number" id="discS" value="0" min="0" max="15" step="0.5" oninput="calc()"><span class="dv" id="dSv">—</span></div>
     <div class="dr"><label>Early Pay (%)</label><input type="number" id="discE" value="0" min="0" max="2" step="0.5" oninput="calc()"><span class="dv" id="dEv">—</span></div>
     <div class="dr"><label>Impl. Reduction (%)</label><input type="number" id="discI" value="0" min="0" max="40" step="5" oninput="calc()"><span class="dv" id="dIv">—</span></div>
+    </div>
   </div>
 
-  <div>
-    <div class="sec">Proposal Info</div>
+  <div class="acc" id="accPropD">
+    <div class="acc-hdr" onclick="toggleAcc('accPropD')"><div class="sec">Proposal Info</div><span class="acc-arrow">&#9656;</span></div>
+    <div class="acc-body">
     <div class="fg"><label>Street Address</label><input type="text" id="pAddr" placeholder="" oninput="calc()"></div>
     <div class="fg"><label>City, State ZIP</label><input type="text" id="pCity" placeholder="" oninput="calc()"></div>
     <div class="fg"><label>Primary Contact</label><input type="text" id="pContact" oninput="calc()"></div>
@@ -281,11 +315,13 @@ h1{font-size:17px;font-weight:700;color:#111}
     <div class="fg"><label>Rep Email</label><input type="text" id="pRepEmail" oninput="calc()"></div>
     <div class="fg"><label>Deal Type</label><select id="pDealType" onchange="calc()"><option>New Business</option><option>Renewal</option></select></div>
     <div class="fg"><label>Notes</label><input type="text" id="pComments" oninput="calc()"></div>
+    </div>
   </div>
   </div><!-- end districtOnlyPanel -->
 </div>
 
 <div class="main">
+  <div class="sticky-header">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <div><h1 id="mainTitle">Select a District to Begin</h1><div style="font-size:12px;color:#6b7280;margin-top:2px" id="mainSub">Choose a Texas district from the search box</div></div>
     <div style="display:flex;gap:8px;align-items:center">
@@ -294,11 +330,12 @@ h1{font-size:17px;font-weight:700;color:#111}
     </div>
   </div>
 
-  <div class="sg">
+  <div class="sg" style="margin-top:0.85rem">
     <div class="sc" style="background:#eff6ff;border:1px solid #bfdbfe"><div class="sl" style="color:#3b82f6">Annual Recurring (net)</div><div class="sv blue" id="annualSaaS">—</div></div>
     <div class="sc" style="background:#1a56db;border:1px solid #1447c0;padding:0.9rem 1.1rem"><div class="sl" style="color:#bfdbfe;font-size:12px;font-weight:700">Year 1 Total</div><div class="sv" style="color:#fff;font-size:26px;font-weight:700" id="year1Total">—</div></div>
     <div class="sc" style="background:#f0fdf4;border:1px solid #bbf7d0"><div class="sl" style="color:#16a34a">Total Savings</div><div class="sv" style="color:#15803d" id="totalDisc">—</div></div>
   </div>
+  </div><!-- end sticky-header -->
 
   <div class="card">
     <div class="ct">Module Pricing Detail</div>
@@ -373,6 +410,61 @@ h1{font-size:17px;font-weight:700;color:#111}
     <div class="pr"><span class="lbl">Mobile enablement (one-time)</span><span class="val" id="mobileEnableVal">—</span></div>
     <div class="dvd"></div>
     <div class="pr tot"><span class="lbl">Year 1 Total</span><span class="val" id="year1TotalBottom">—</span></div>
+  </div>
+
+  <div class="card" id="pilotCard">
+    <div class="ramp-toggle-row">
+      <div class="ct" style="margin-bottom:0">Pilot Pricing</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;color:#6b7280">Enable pilot</span>
+        <div class="toggle-sw" id="pilotToggle" onclick="togglePilot()"></div>
+      </div>
+    </div>
+    <div id="pilotBody" style="display:none">
+      <div style="font-size:11px;color:#6b7280;margin-bottom:10px">Pilot fee covers implementation &amp; training cost. Defaults to a percentage of Year 1 Total — fully editable. Credits toward Year 1 if the district signs within the conversion window.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="fg" style="margin-bottom:0"><label>Pilot Length</label>
+          <select id="pilotLength" onchange="updatePilotDefaults();renderPilot()">
+            <option value="30">30 Days</option>
+            <option value="45" selected>45 Days</option>
+            <option value="60">60 Days</option>
+          </select>
+        </div>
+        <div class="fg" style="margin-bottom:0"><label>Pilot Fee (% of Year 1)</label>
+          <input type="number" id="pilotPct" value="20" min="0" max="100" step="1" oninput="renderPilot()">
+        </div>
+        <div class="fg" style="margin-bottom:0"><label>Conversion Window (days)</label>
+          <input type="number" id="pilotWindow" value="90" min="0" max="365" step="5" oninput="renderPilot()">
+        </div>
+      </div>
+      <div class="ramp-summary" style="margin-top:0">
+        <span>Year 1 Total (full): <strong id="pilotFullYear1">—</strong></span>
+        <span>Pilot Fee: <strong id="pilotFeeAmt" style="color:#1a56db">—</strong></span>
+        <span>Credits toward Year 1 if converted within window</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="rampCard" style="display:none">
+    <div class="ramp-toggle-row">
+      <div class="ct" style="margin-bottom:0">Multi-Year Ramp Pricing</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;color:#6b7280">Enable ramp</span>
+        <div class="toggle-sw" id="rampToggle" onclick="toggleRamp()"></div>
+      </div>
+    </div>
+    <div id="rampBody" style="display:none">
+      <div style="font-size:11px;color:#6b7280;margin-bottom:8px">Set each contract year's price as a % of full annual recurring (net), or override with an exact dollar amount.</div>
+      <table class="ramp-table">
+        <thead><tr><th>Year</th><th class="r">% of Full Price</th><th class="r">Annual Recurring</th><th class="r">Override $</th></tr></thead>
+        <tbody id="rampRows"></tbody>
+      </table>
+      <div class="ramp-summary">
+        <span>Full Annual Recurring: <strong id="rampFullPrice">—</strong></span>
+        <span>Total Contract Value: <strong id="rampTotalValue">—</strong></span>
+        <span>Avg Annual: <strong id="rampAvgAnnual">—</strong></span>
+      </div>
+    </div>
   </div>
 </div>
 </div>
@@ -466,6 +558,7 @@ function selectDistrict(idx){
 
   updateCountDisplay();
   calc();
+  showRampCardIfEligible();
 }
 
 function updateCountDisplay(){
@@ -591,6 +684,8 @@ function calc(){
   document.getElementById("dIv").textContent=iDisc>0?"-"+fmt(iDisc):"—"; document.getElementById("dIv").style.color=iDisc>0?"#dc2626":"#9ca3af";
 
   st={e,tier,rc,term,mOpt,mobFee,mobEnable,implNet,implBase,implIncl,saasGross,saasNet,annualNet,year1,totalDiscount,totalSaasDisc,rows,termDisc,termPct,sDisc,cDisc,eDisc,sPct,cPct,ePct,iPct,iDisc,bundleInfo,bundleDisc,modCount:selMods.length,annualTotalNet:annualNet};
+  if(document.getElementById('rampCard') && document.getElementById('rampCard').style.display==='block') renderRampTable();
+  if(pilotEnabled) renderPilot();
 }
 
 function showCoopProposal(){
@@ -692,6 +787,33 @@ function showCoopProposal(){
       <div style="font-size:24px;font-weight:700;color:#fff">${fmt(s.year1)}</div>
     </div>
   </div>
+
+  ${rampEnabled && rampYears.length>1 ? `<div style="margin-bottom:1.25rem">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">Multi-Year Pricing Schedule</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:#f9fafb"><th style="${th}">Contract Year</th><th style="${thr}">% of Full Price</th><th style="${thr}">Annual Recurring</th></tr></thead>
+      <tbody>${rampYears.map((ry,i)=>{
+        const full=s.annualArr;
+        const amt=ry.override!==null?ry.override:full*(ry.pct/100);
+        const isFinal=i===rampYears.length-1;
+        return `<tr ${isFinal?'style="background:#fdf4ff"':''}>
+          <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">Year ${ry.year}${isFinal?' (full price)':''}</td>
+          <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right">${ry.override!==null?'custom':ry.pct+'%'}</td>
+          <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700;${isFinal?'color:#7e22ce':''}">${fmt(amt)}</td>
+        </tr>`;
+      }).join('')}</tbody>
+      <tfoot><tr><td colspan="2" style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">Total Contract Value</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#7e22ce;font-size:13px">${fmt(rampYears.reduce((a,ry)=>a+(ry.override!==null?ry.override:s.annualArr*(ry.pct/100)),0))}</td></tr></tfoot>
+    </table>
+  </div>` : ''}
+
+  ${pilotEnabled ? `<div style="margin-bottom:1.25rem;background:#fdf4ff;border:1px solid #e9d5ff;border-radius:8px;padding:0.9rem 1.1rem">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#7e22ce;margin-bottom:6px">Pilot Program</div>
+    <div style="font-size:12px;color:#374151;line-height:1.7">
+      This proposal includes a <strong>${document.getElementById('pilotLength').value}-day pilot</strong> covering the IEP module across all member schools.
+      Pilot fee: <strong>${fmt(getPilotState().fee)}</strong> (${document.getElementById('pilotPct').value}% of Year 1 Total), covering implementation and training across the co-op.<br>
+      If the co-op signs a full annual agreement within <strong>${document.getElementById('pilotWindow').value} days</strong> of pilot start, the full pilot fee will be credited toward Year 1 cost.
+    </div>
+  </div>` : ''}
 
   <div style="margin-bottom:1.25rem">
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">Recurring Annual Fees</div>
@@ -835,6 +957,31 @@ function showProposal(){
       <div style="font-size:24px;font-weight:700;color:#fff">${fmt(s.year1)}</div>
     </div>
   </div>
+  ${rampEnabled && rampYears.length>1 ? `<div style="margin-bottom:1.25rem">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">Multi-Year Pricing Schedule</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:#f9fafb"><th style="${th}">Contract Year</th><th style="${thr}">% of Full Price</th><th style="${thr}">Annual Recurring</th></tr></thead>
+      <tbody>${rampYears.map((ry,i)=>{
+        const full=s.annualTotalNet;
+        const amt=ry.override!==null?ry.override:full*(ry.pct/100);
+        const isFinal=i===rampYears.length-1;
+        return `<tr ${isFinal?'style="background:#eff6ff"':''}>
+          <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">Year ${ry.year}${isFinal?' (full price)':''}</td>
+          <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right">${ry.override!==null?'custom':ry.pct+'%'}</td>
+          <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700;${isFinal?'color:#1d4ed8':''}">${fmt(amt)}</td>
+        </tr>`;
+      }).join('')}</tbody>
+      <tfoot><tr><td colspan="2" style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">Total Contract Value</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#1a56db;font-size:13px">${fmt(rampYears.reduce((a,ry)=>a+(ry.override!==null?ry.override:s.annualTotalNet*(ry.pct/100)),0))}</td></tr></tfoot>
+    </table>
+  </div>` : ''}
+  ${pilotEnabled ? `<div style="margin-bottom:1.25rem;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:0.9rem 1.1rem">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#1d4ed8;margin-bottom:6px">Pilot Program</div>
+    <div style="font-size:12px;color:#374151;line-height:1.7">
+      This proposal includes a <strong>${document.getElementById('pilotLength').value}-day pilot</strong> covering the modules above.
+      Pilot fee: <strong>${fmt(getPilotState().fee)}</strong> (${document.getElementById('pilotPct').value}% of Year 1 Total), covering implementation and training.<br>
+      If ${currentMode==='coop'?'the co-op':'the district'} signs a full annual agreement within <strong>${document.getElementById('pilotWindow').value} days</strong> of pilot start, the full pilot fee will be credited toward Year 1 cost.
+    </div>
+  </div>` : ''}
   <div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">Recurring Annual Fees</div>
   <table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#f9fafb"><th style="${th}">Item #</th><th style="${th}">Description</th><th style="${th};text-align:center">Qty</th><th style="${th}">Freq.</th><th style="${thr}">Unit Price</th><th style="${thr}">Gross</th><th style="${thr}">Net</th></tr></thead><tbody>${annR}</tbody><tfoot><tr><td colspan="5" style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">Annual Total (net)</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700">${fmt(s.saasGross+s.mobFee)}</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#1a56db;font-size:13px">${fmt(s.annualTotalNet)}</td></tr></tfoot></table></div>
   <div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">One-Time Fees</div>
@@ -917,6 +1064,7 @@ function selectCoop(idx){
   loadMemberSchools(co);
   renderMemberTable();
   calcCoop();
+  showRampCardIfEligible();
 }
 
 function calcCoop(){
@@ -994,6 +1142,8 @@ function calcCoop(){
   document.getElementById('dIv').textContent='—'; document.getElementById('dIv').style.color='#9ca3af';
 
   coopSt={co,rc,term,implIncl,discPct,termPct,base,perStu,gross,discBase,annualArr,implFee,year1,totalDiscAmt,aeDiscAmt,termDiscAmt,maxDisc,overMax};
+  if(document.getElementById('rampCard') && document.getElementById('rampCard').style.display==='block') renderRampTable();
+  if(pilotEnabled) renderPilot();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1171,6 +1321,156 @@ function addSchool(name, enrollment){
   });
   renderMemberTable();
   calcCoop();
+}
+
+// ═══════════════════════════════════════════════════════════
+// MULTI-YEAR RAMP PRICING
+// ═══════════════════════════════════════════════════════════
+let rampEnabled = false;
+let rampYears = []; // [{year:1, pct:70, override:null}, ...]
+
+function getDefaultRampPcts(term){
+  const t = parseInt(term);
+  if(t===2) return [70,100];
+  if(t===3) return [70,85,100];
+  if(t===5) return [60,70,80,90,100];
+  return [100];
+}
+
+function getCurrentTerm(){
+  return currentMode==='coop'
+    ? document.getElementById('coopTerm').value
+    : document.getElementById('term').value;
+}
+
+function getFullAnnualRecurring(){
+  // Reads the live annual recurring net from whichever mode is active
+  return currentMode==='coop' ? (coopSt.annualArr||0) : (st.annualNet||0);
+}
+
+function showRampCardIfEligible(){
+  const term = getCurrentTerm();
+  const card = document.getElementById('rampCard');
+  if(!card) return;
+  if(parseInt(term) > 1){
+    card.style.display = 'block';
+    // Reset ramp years to match new term length, preserving toggle state
+    initRampYears();
+    renderRampTable();
+  } else {
+    card.style.display = 'none';
+    rampEnabled = false;
+    document.getElementById('rampToggle').classList.remove('on');
+    document.getElementById('rampBody').style.display = 'none';
+  }
+}
+
+function initRampYears(){
+  const term = parseInt(getCurrentTerm());
+  const defaults = getDefaultRampPcts(term);
+  rampYears = defaults.map((pct,i)=>({year:i+1, pct, override:null}));
+}
+
+function toggleRamp(){
+  rampEnabled = !rampEnabled;
+  document.getElementById('rampToggle').classList.toggle('on', rampEnabled);
+  document.getElementById('rampBody').style.display = rampEnabled ? 'block' : 'none';
+  if(rampEnabled && rampYears.length===0) initRampYears();
+  // Mutually exclusive with pilot — pilots are short-term, ramps are multi-year
+  if(rampEnabled && pilotEnabled){
+    pilotEnabled = false;
+    document.getElementById('pilotToggle').classList.remove('on');
+    document.getElementById('pilotBody').style.display = 'none';
+  }
+  renderRampTable();
+}
+
+function renderRampTable(){
+  const full = getFullAnnualRecurring();
+  document.getElementById('rampFullPrice').textContent = fmtC(full);
+  const tbody = document.getElementById('rampRows');
+  if(!tbody) return;
+
+  let totalValue = 0;
+  tbody.innerHTML = rampYears.map((ry,i)=>{
+    const amt = ry.override!==null ? ry.override : full * (ry.pct/100);
+    totalValue += amt;
+    const isFinal = i === rampYears.length-1;
+    return `<tr class="${isFinal?'ramp-final':''}">
+      <td>Year ${ry.year}${isFinal?' (full price)':''}</td>
+      <td class="r"><input type="number" value="${ry.pct}" min="0" max="200" step="1" onchange="updateRampPct(${i},this.value)" ${ry.override!==null?'disabled':''}></td>
+      <td class="r">${fmtC(amt)}</td>
+      <td class="r"><input type="number" placeholder="—" value="${ry.override!==null?ry.override:''}" step="100" onchange="updateRampOverride(${i},this.value)"></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('rampTotalValue').textContent = fmtC(totalValue);
+  document.getElementById('rampAvgAnnual').textContent = fmtC(totalValue/rampYears.length);
+}
+
+function updateRampPct(idx, val){
+  rampYears[idx].pct = parseFloat(val)||0;
+  rampYears[idx].override = null;
+  renderRampTable();
+}
+
+function updateRampOverride(idx, val){
+  const v = val.trim();
+  rampYears[idx].override = v===''? null : parseFloat(v)||0;
+  renderRampTable();
+}
+
+// ═══════════════════════════════════════════════════════════
+// PILOT PRICING
+// ═══════════════════════════════════════════════════════════
+let pilotEnabled = false;
+
+const PILOT_DEFAULTS = {'30':15, '45':20, '60':25};
+
+function togglePilot(){
+  pilotEnabled = !pilotEnabled;
+  document.getElementById('pilotToggle').classList.toggle('on', pilotEnabled);
+  document.getElementById('pilotBody').style.display = pilotEnabled ? 'block' : 'none';
+  // Mutually exclusive with ramp — pilots are short-term, ramps are multi-year
+  if(pilotEnabled && rampEnabled){
+    rampEnabled = false;
+    document.getElementById('rampToggle').classList.remove('on');
+    document.getElementById('rampBody').style.display = 'none';
+  }
+  renderPilot();
+}
+
+function updatePilotDefaults(){
+  const len = document.getElementById('pilotLength').value;
+  document.getElementById('pilotPct').value = PILOT_DEFAULTS[len] || 20;
+}
+
+function getFullYear1(){
+  return currentMode==='coop' ? (coopSt.year1||0) : (st.year1||0);
+}
+
+function renderPilot(){
+  if(!pilotEnabled) return;
+  const full = getFullYear1();
+  const pct = parseFloat(document.getElementById('pilotPct').value)||0;
+  const fee = full * (pct/100);
+  document.getElementById('pilotFullYear1').textContent = fmtC(full);
+  document.getElementById('pilotFeeAmt').textContent = fmtC(fee);
+}
+
+function getPilotState(){
+  if(!pilotEnabled) return null;
+  const length = document.getElementById('pilotLength').value;
+  const pct = parseFloat(document.getElementById('pilotPct').value)||0;
+  const window = document.getElementById('pilotWindow').value;
+  const full = getFullYear1();
+  const fee = full * (pct/100);
+  return {length, pct, window, full, fee};
+}
+
+function toggleAcc(id){
+  const el = document.getElementById(id);
+  if(el) el.classList.toggle('open');
 }
 
 </script>
