@@ -141,6 +141,10 @@ h1{font-size:17px;font-weight:700;color:#111}
 .acc-badge{font-size:9px;background:#1a56db;color:#fff;padding:1px 6px;border-radius:10px;margin-left:6px;font-weight:700}
 .acc-badge.purple{background:#7e22ce}
 .acc-badge.amber{background:#d97706}
+#pilotCard.active{border:2px solid #f59e0b;background:#fffbeb;box-shadow:0 0 0 3px rgba(245,158,11,0.12)}
+#pilotCard.active .ct{color:#92400e}
+.pilot-sticky-box{display:none}
+.pilot-sticky-box.show{display:block}
 .coop-info-row{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
 .coop-info-row .k{color:#6b7280}.coop-info-row .v{font-weight:700;color:#7e22ce}
 .tier-pill-coop{display:inline-flex;align-items:center;background:#fdf4ff;color:#7e22ce;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #e9d5ff}
@@ -334,6 +338,15 @@ h1{font-size:17px;font-weight:700;color:#111}
     <div class="sc" style="background:#eff6ff;border:1px solid #bfdbfe"><div class="sl" style="color:#3b82f6">Annual Recurring (net)</div><div class="sv blue" id="annualSaaS">—</div></div>
     <div class="sc" style="background:#1a56db;border:1px solid #1447c0;padding:0.9rem 1.1rem"><div class="sl" style="color:#bfdbfe;font-size:12px;font-weight:700">Year 1 Total</div><div class="sv" style="color:#fff;font-size:26px;font-weight:700" id="year1Total">—</div></div>
     <div class="sc" style="background:#f0fdf4;border:1px solid #bbf7d0"><div class="sl" style="color:#16a34a">Total Savings</div><div class="sv" style="color:#15803d" id="totalDisc">—</div></div>
+  </div>
+  <div class="pilot-sticky-box" id="pilotStickyBox">
+    <div class="sc" style="background:#fffbeb;border:2px solid #f59e0b;margin-top:10px;display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1rem">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">🧪</span>
+        <div><div class="sl" style="color:#92400e;margin-bottom:0">Pilot Active — <span id="pilotStickyLength">—</span>-Day Trial</div></div>
+      </div>
+      <div class="sv" style="color:#b45309;font-size:22px" id="pilotStickyFee">—</div>
+    </div>
   </div>
   </div><!-- end sticky-header -->
 
@@ -1381,6 +1394,8 @@ function toggleRamp(){
     pilotEnabled = false;
     document.getElementById('pilotToggle').classList.remove('on');
     document.getElementById('pilotBody').style.display = 'none';
+    document.getElementById('pilotCard').classList.remove('active');
+    document.getElementById('pilotStickyBox').classList.remove('show');
   }
   renderRampTable();
 }
@@ -1431,6 +1446,8 @@ function togglePilot(){
   pilotEnabled = !pilotEnabled;
   document.getElementById('pilotToggle').classList.toggle('on', pilotEnabled);
   document.getElementById('pilotBody').style.display = pilotEnabled ? 'block' : 'none';
+  document.getElementById('pilotCard').classList.toggle('active', pilotEnabled);
+  document.getElementById('pilotStickyBox').classList.toggle('show', pilotEnabled);
   // Mutually exclusive with ramp — pilots are short-term, ramps are multi-year
   if(pilotEnabled && rampEnabled){
     rampEnabled = false;
@@ -1454,8 +1471,11 @@ function renderPilot(){
   const full = getFullYear1();
   const pct = parseFloat(document.getElementById('pilotPct').value)||0;
   const fee = full * (pct/100);
+  const len = document.getElementById('pilotLength').value;
   document.getElementById('pilotFullYear1').textContent = fmtC(full);
   document.getElementById('pilotFeeAmt').textContent = fmtC(fee);
+  document.getElementById('pilotStickyFee').textContent = fmtC(fee);
+  document.getElementById('pilotStickyLength').textContent = len;
 }
 
 function getPilotState(){
