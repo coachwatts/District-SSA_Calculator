@@ -511,6 +511,7 @@ const IMPL=[[1000,1500,2000,2500],[1500,2000,2500,3000],[3000,4000,5000,6000],[6
 const TIERS=[[0,499,"T0","<500",0],[500,999,"T1","500–999",1],[1000,4999,"T2","1,000–4,999",2],[5000,19999,"T3","5,000–19,999",3],[20000,49999,"T4","20,000–49,999",4],[50000,999999,"T5","50,000+",5]];
 const TDISC={"1":0,"2":0.03,"3":0.05,"5":0.08};
 const MITEMS={RTI:"K12-001","504":"K12-002",LPAC:"K12-003",IEP:"K12-004"};
+const MNAMES={RTI:"RTI / MTSS",  "504":"504 Plan Management",LPAC:"LPAC / EL Services",IEP:"IEP Management"};
 const PKG=["Focus","Connect2","Connect3","Complete"];
 const BUNDLES={
   "504|IEP":{pct:0.06,name:"Student Services Core (504 + IEP)"},
@@ -723,12 +724,9 @@ function showCoopProposal(){
 
   const discBase=s.base*(1-s.totalBaseDisc);
   const annualRow=`<tr>
-    <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">K12-004</td>
-    <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">IEP Module</td>
-    <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:center">${activeSped.toLocaleString()}</td>
+    <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">IEP Management — ${co.member_schools} Member School${co.member_schools===1?'':'s'}</td>
+    <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:center">${activeSped.toLocaleString()} SPED</td>
     <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">Annually</td>
-    <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right">${fmt(s.base)} base + ${fmt(s.perStu)} per-SPED</td>
-    <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right">${fmt(s.gross)}</td>
     <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700">${fmt(s.annualArr)}</td>
   </tr>`;
 
@@ -737,9 +735,19 @@ function showCoopProposal(){
   if(s.aeDiscAmt>0) discRows+=`<tr><td style="padding:6px 10px;border-bottom:1px solid #f3f4f6">AE discount — applied to base fee only</td><td style="padding:6px 10px;border-bottom:1px solid #f3f4f6;text-align:right">${(s.discPct*100).toFixed(1)}%</td><td style="padding:6px 10px;border-bottom:1px solid #f3f4f6;text-align:right;color:#dc2626;font-weight:700">${fmt(s.aeDiscAmt)}</td></tr>`;
   if(!discRows) discRows=`<tr><td colspan="3" style="padding:6px 10px;color:#9ca3af;font-style:italic">No additional discounts applied</td></tr>`;
 
-  const otRow=s.implIncl?`<tr><td style="padding:7px 10px">K12-101</td><td style="padding:7px 10px">Implementation</td><td style="padding:7px 10px;text-align:center">1</td><td style="padding:7px 10px">One-time</td><td style="padding:7px 10px;text-align:right">${fmt(s.implFee)}</td><td style="padding:7px 10px;text-align:right;font-weight:700">${fmt(s.implFee)}</td></tr>`:`<tr><td colspan="6" style="padding:7px 10px;color:#9ca3af;font-style:italic">No one-time fees</td></tr>`;
+  const otRow=s.implIncl?`<tr><td style="padding:7px 10px">Implementation &amp; Onboarding</td><td style="padding:7px 10px;text-align:right;font-weight:700">${fmt(s.implFee)}</td></tr>`:`<tr><td colspan="2" style="padding:7px 10px;color:#9ca3af;font-style:italic">No one-time fees</td></tr>`;
 
-  const TERMS=`<ol style="padding-left:1.25rem;font-size:11px;color:#374151;line-height:1.75"><li style="margin-bottom:5px"><strong>Scope of Services.</strong> K12 Plus agrees to provide access to its cloud-based IEP management platform for use by the Co-op and its member school districts, including administrators, educators, and authorized staff as designated by the Co-op.</li><li style="margin-bottom:5px"><strong>Pricing Model.</strong> Annual recurring fees are calculated based on the sum of individual member school IEP pricing (base fee + per-SPED-student fee). The co-op tier discount is applied to the aggregate base fee only. Per-student fees are charged at the standard published rate.</li><li style="margin-bottom:5px"><strong>Term and Renewal.</strong> The term shall be as set forth in this proposal. Unless otherwise specified, the Agreement auto-renews annually.</li><li style="margin-bottom:5px"><strong>Fees and Payment.</strong> Invoices issued per billing schedule. Late payments subject to 1.5%/month interest. K12 Plus reserves the right to suspend access for non-payment after reasonable notice.</li><li style="margin-bottom:5px"><strong>Data Privacy.</strong> K12 Plus complies with FERPA, COPPA, and applicable IDEA regulations. A Data Privacy Agreement will be executed prior to go-live. The Co-op and member districts retain ownership of all student data.</li><li style="margin-bottom:5px"><strong>Member School Coverage.</strong> Pricing covers all member schools listed at time of agreement. Addition of member schools during the term requires a pricing amendment.</li><li style="margin-bottom:5px"><strong>Implementation.</strong> K12 Plus will provide coordinated onboarding across all member schools, including training and data migration support.</li><li style="margin-bottom:5px"><strong>Governing Law.</strong> This Agreement is governed by the laws of the State of Texas.</li><li style="margin-bottom:5px"><strong>Entire Agreement.</strong> This proposal, together with any executed MSA, DPA, and order form, constitutes the entire agreement between the parties.</li></ol>`;
+  const TERMS=`<div style="font-size:11px;color:#374151;line-height:1.8">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 2rem;margin-bottom:10px">
+    <div><strong>Term:</strong> As set forth above; auto-renews annually unless cancelled</div>
+    <div><strong>Pricing Basis:</strong> Sum of member school IEP pricing; tier discount applies to base fee only</div>
+    <div><strong>Payment:</strong> Per invoice schedule; net terms apply</div>
+    <div><strong>Data Privacy:</strong> FERPA/COPPA/IDEA compliant; Co-op retains data ownership</div>
+    <div><strong>Member Coverage:</strong> Pricing covers listed member schools; additions require amendment</div>
+    <div><strong>Implementation:</strong> Coordinated onboarding and training across all member schools</div>
+  </div>
+  <div style="color:#6b7280;font-style:italic;border-top:1px solid #e5e7eb;padding-top:8px;margin-top:4px">This proposal summarizes key business terms only. Complete terms and conditions are governed by the K12 Plus Master Service Agreement (MSA) and Data Privacy Agreement (DPA), provided separately for execution alongside this order.</div>
+</div>`;
 
   document.getElementById('propInner').innerHTML=`
 <div style="padding:2.25rem 2.5rem;font-family:Arial,Helvetica,sans-serif">
@@ -831,9 +839,9 @@ function showCoopProposal(){
   <div style="margin-bottom:1.25rem">
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">Recurring Annual Fees</div>
     <table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr style="background:#f9fafb"><th style="${th}">Item #</th><th style="${th}">Description</th><th style="${th};text-align:center">SPED Students</th><th style="${th}">Freq.</th><th style="${thr}">Gross</th><th style="${thr}">Gross</th><th style="${thr}">Net Annual</th></tr></thead>
+      <thead><tr style="background:#f9fafb"><th style="${th}">Item</th><th style="${th};text-align:center">SPED Students</th><th style="${th}">Billing</th><th style="${thr}">Annual Price</th></tr></thead>
       <tbody>${annualRow}</tbody>
-      <tfoot><tr><td colspan="5" style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">Annual Total (net)</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700">${fmt(s.gross)}</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#7e22ce;font-size:13px">${fmt(s.annualArr)}</td></tr></tfoot>
+      <tfoot><tr><td colspan="3" style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">Annual Total (net)</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#7e22ce;font-size:13px">${fmt(s.annualArr)}</td></tr></tfoot>
     </table>
   </div>
 
@@ -849,9 +857,9 @@ function showCoopProposal(){
   <div style="margin-bottom:1.25rem">
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">One-Time Fees</div>
     <table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr style="background:#f9fafb"><th style="${th}">Item #</th><th style="${th}">Description</th><th style="${th};text-align:center">Qty</th><th style="${th}">Freq.</th><th style="${thr}">List</th><th style="${thr}">Net</th></tr></thead>
+      <thead><tr style="background:#f9fafb"><th style="${th}">Item</th><th style="${thr}">Amount</th></tr></thead>
       <tbody>${otRow}</tbody>
-      <tfoot><tr><td colspan="4" style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">One-Time Total</td><td colspan="2" style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#15803d;font-size:13px">${fmt(s.implFee)}</td></tr></tfoot>
+      <tfoot><tr><td style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">One-Time Total</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#15803d;font-size:13px">${fmt(s.implFee)}</td></tr></tfoot>
     </table>
   </div>
 
@@ -867,7 +875,7 @@ function showCoopProposal(){
   ${comments?`<div style="margin-bottom:1.25rem;background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:0.75rem 1rem"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#92400e;margin-bottom:3px">Notes</div><div style="font-size:12px;color:#78350f">${comments}</div></div>`:''}
 
   <div style="margin-bottom:1.25rem">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:10px;padding-top:0.75rem;border-top:1px solid #e5e7eb">K12 Plus Co-op / SSA Agreement Terms</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:10px;padding-top:0.75rem;border-top:1px solid #e5e7eb">Key Terms Summary</div>
     ${TERMS}
   </div>
 
@@ -918,14 +926,14 @@ function showProposal(){
   const th="padding:7px 10px;border-bottom:1px solid #e5e7eb;color:#6b7280;font-weight:600;font-size:11px;text-align:left";
   const thr="padding:7px 10px;border-bottom:1px solid #e5e7eb;color:#6b7280;font-weight:600;font-size:11px;text-align:right";
 
-  let annR=s.rows.map(r=>`<tr><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">${MITEMS[r.mod]}</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">${r.mod} Module</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:center">${r.cnt.toLocaleString()}</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">Annually</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right">${fmt(r.base)} + $${r.ps.toFixed(2)}/unit</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right">${fmt(r.gross)}</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700">${fmt(r.net)}</td></tr>`).join("");
+  let annR=s.rows.map(r=>`<tr><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">${MNAMES[r.mod]||r.mod+" Module"}</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:center">${r.cnt.toLocaleString()}</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">Annually</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700">${fmt(r.net)}</td></tr>`).join("");
   const mobLabel=s.mOpt==="M1"?"Annual Mobile Add-on":s.mOpt==="M2"?"Annual Mobile Add-on":"Annual Mobile Bundle";
-  if(s.mobFee>0) annR+=`<tr><td style="padding:7px 10px">K12-005</td><td style="padding:7px 10px">${mobLabel}</td><td style="padding:7px 10px;text-align:center">1</td><td style="padding:7px 10px">Annually</td><td style="padding:7px 10px;text-align:right">Flat by tier</td><td style="padding:7px 10px;text-align:right">${fmt(s.mobFee)}</td><td style="padding:7px 10px;text-align:right;font-weight:700">${fmt(s.mobFee)}</td></tr>`;
+  if(s.mobFee>0) annR+=`<tr><td style="padding:7px 10px">${mobLabel}</td><td style="padding:7px 10px;text-align:center">1</td><td style="padding:7px 10px">Annually</td><td style="padding:7px 10px;text-align:right;font-weight:700">${fmt(s.mobFee)}</td></tr>`;
 
   let otR="";
-  if(s.implIncl) otR+=`<tr><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">K12-101</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">Implementation</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:center">1</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">One-time</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right">${fmt(s.implBase)}</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700">${fmt(s.implNet)}</td></tr>`;
-  if(s.mobEnable>0) otR+=`<tr><td style="padding:7px 10px">K12-102</td><td style="padding:7px 10px">Mobile Enablement</td><td style="padding:7px 10px;text-align:center">1</td><td style="padding:7px 10px">One-time</td><td style="padding:7px 10px;text-align:right">Flat by tier</td><td style="padding:7px 10px;text-align:right;font-weight:700">${fmt(s.mobEnable)}</td></tr>`;
-  if(!otR) otR=`<tr><td colspan="6" style="padding:7px 10px;color:#9ca3af;font-style:italic">No one-time fees</td></tr>`;
+  if(s.implIncl) otR+=`<tr><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">Implementation &amp; Onboarding</td><td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700">${fmt(s.implNet)}</td></tr>`;
+  if(s.mobEnable>0) otR+=`<tr><td style="padding:7px 10px">Mobile App Enablement</td><td style="padding:7px 10px;text-align:right;font-weight:700">${fmt(s.mobEnable)}</td></tr>`;
+  if(!otR) otR=`<tr><td colspan="2" style="padding:7px 10px;color:#9ca3af;font-style:italic">No one-time fees</td></tr>`;
 
   let discR="";
   if(s.bundleInfo&&s.bundleDisc>0) discR+=`<tr><td style="padding:6px 10px;border-bottom:1px solid #f3f4f6">${s.bundleInfo.name}</td><td style="padding:6px 10px;border-bottom:1px solid #f3f4f6;text-align:right">${(s.bundleInfo.pct*100).toFixed(0)}%</td><td style="padding:6px 10px;border-bottom:1px solid #f3f4f6;text-align:right;color:#dc2626;font-weight:700">${fmt(s.bundleDisc)}</td></tr>`;
@@ -935,7 +943,17 @@ function showProposal(){
   if(s.eDisc>0) discR+=`<tr><td style="padding:6px 10px">Early pay</td><td style="padding:6px 10px;text-align:right">${(s.ePct*100).toFixed(1)}%</td><td style="padding:6px 10px;text-align:right;color:#dc2626;font-weight:700">${fmt(s.eDisc)}</td></tr>`;
   if(!discR) discR=`<tr><td colspan="3" style="padding:6px 10px;color:#9ca3af;font-style:italic">No additional discounts applied</td></tr>`;
 
-  const TERMS=`<ol style="padding-left:1.25rem;font-size:11px;color:#374151;line-height:1.75"><li style="margin-bottom:5px"><strong>Scope of Services.</strong> K12 Plus agrees to provide access to its cloud-based education platform ("Services") for use by the District, including administrators, educators, authorized students, and authorized parents or legal guardians of such students, as designated by the District and subject to applicable law.</li><li style="margin-bottom:5px"><strong>Intended Purpose.</strong> The Services are designed solely for educational and administrative use by the District in support of K–12 instruction and student outcomes. The Services are not intended for medical diagnosis, treatment, or clinical decision-making. Use involving sensitive data will comply with FERPA, COPPA, and where applicable, HIPAA.</li><li style="margin-bottom:5px"><strong>Term and Renewal.</strong> The term shall be as set forth in the Quote. Unless otherwise specified, the Agreement will automatically renew for successive one (1) year terms.</li><li style="margin-bottom:5px"><strong>Fees and Payment Terms.</strong> Fees shall be as set forth in the Quote. Late payments may be subject to interest at the lesser of 1.5% per month or the maximum permitted by law. K12 Plus reserves the right to suspend Services for non-payment after reasonable notice.</li><li style="margin-bottom:5px"><strong>Data Privacy and Security.</strong> K12 Plus shall comply with FERPA, COPPA, and where applicable, HIPAA; maintain administrative, physical, and technical safeguards; encrypt data in transit and at rest; and execute a DPA and/or BAA if required. The District retains ownership of all student data.</li><li style="margin-bottom:5px"><strong>Data Use and Restrictions.</strong> K12 Plus will use District Data solely to provide the Services; not sell or rent student data; not use data for targeted advertising.</li><li style="margin-bottom:5px"><strong>Ownership.</strong> K12 Plus retains all right, title, and interest in and to the Services, including improvements and derivative works. Nothing in this Agreement grants the District ownership rights in the Services.</li><li style="margin-bottom:5px"><strong>Security Incident Notification.</strong> K12 Plus will notify the District within 72 hours of discovering a security incident involving District Data.</li><li style="margin-bottom:5px"><strong>Implementation and Support.</strong> K12 Plus will provide onboarding support, training resources, and ongoing technical support.</li><li style="margin-bottom:5px"><strong>Third-Party Integrations.</strong> Third-party services are subject to their own terms. K12 Plus is not liable for third-party outages or failures.</li><li style="margin-bottom:5px"><strong>Compliance and Audits.</strong> K12 Plus maintains SOC 2 compliance and compliance with applicable education and privacy laws. Upon reasonable request, K12 Plus may provide SOC 2 reports under NDA.</li><li style="margin-bottom:5px"><strong>Confidentiality.</strong> Both parties agree to protect confidential information and not disclose without prior written consent.</li><li style="margin-bottom:5px"><strong>Termination.</strong> Either party may terminate for convenience with 60 days written notice, or for breach if not cured within 30 days. District Data will be returned or deleted within 30–60 days upon termination.</li><li style="margin-bottom:5px"><strong>Limited Product Warranty.</strong> K12 Plus warrants that the Services will perform materially in accordance with documentation during the term. Services are provided "as is." All other warranties are disclaimed.</li><li style="margin-bottom:5px"><strong>Limitation of Liability.</strong> Liability shall not exceed fees paid in the prior 12 months. No liability for indirect, incidental, or consequential damages.</li><li style="margin-bottom:5px"><strong>Indemnification.</strong> K12 Plus agrees to indemnify the District against claims arising from data breaches caused by K12 Plus negligence or intellectual property infringement.</li><li style="margin-bottom:5px"><strong>Governing Law.</strong> This Agreement is governed by the laws of the State of Texas.</li><li style="margin-bottom:5px"><strong>Entire Agreement.</strong> This Agreement, together with the applicable Quote, Order Form, MSA, DPA, BAA, and any incorporated exhibits, constitutes the entire agreement.</li></ol>`;
+  const TERMS=`<div style="font-size:11px;color:#374151;line-height:1.8">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 2rem;margin-bottom:10px">
+    <div><strong>Term:</strong> As set forth above; auto-renews annually unless cancelled</div>
+    <div><strong>Payment:</strong> Per invoice schedule; net terms apply</div>
+    <div><strong>Data Privacy:</strong> FERPA/COPPA compliant; District retains data ownership</div>
+    <div><strong>Security:</strong> SOC 2 compliant; encrypted in transit and at rest</div>
+    <div><strong>Support:</strong> Onboarding, training, and ongoing technical support included</div>
+    <div><strong>Termination:</strong> 60-day written notice for convenience</div>
+  </div>
+  <div style="color:#6b7280;font-style:italic;border-top:1px solid #e5e7eb;padding-top:8px;margin-top:4px">This proposal summarizes key business terms only. Complete terms and conditions are governed by the K12 Plus Master Service Agreement (MSA) and Data Privacy Agreement (DPA), provided separately for execution alongside this order.</div>
+</div>`;
 
   document.getElementById("propInner").innerHTML=`<div style="padding:2.25rem 2.5rem;font-family:Arial,Helvetica,sans-serif">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:1.25rem;border-bottom:3px solid #1a56db;margin-bottom:1.5rem">
@@ -996,13 +1014,13 @@ function showProposal(){
     </div>
   </div>` : ''}
   <div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">Recurring Annual Fees</div>
-  <table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#f9fafb"><th style="${th}">Item #</th><th style="${th}">Description</th><th style="${th};text-align:center">Qty</th><th style="${th}">Freq.</th><th style="${thr}">Unit Price</th><th style="${thr}">Gross</th><th style="${thr}">Net</th></tr></thead><tbody>${annR}</tbody><tfoot><tr><td colspan="5" style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">Annual Total (net)</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700">${fmt(s.saasGross+s.mobFee)}</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#1a56db;font-size:13px">${fmt(s.annualTotalNet)}</td></tr></tfoot></table></div>
+  <table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#f9fafb"><th style="${th}">Item</th><th style="${th};text-align:center">Quantity</th><th style="${th}">Billing</th><th style="${thr}">Annual Price</th></tr></thead><tbody>${annR}</tbody><tfoot><tr><td colspan="3" style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">Annual Total (net)</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#1a56db;font-size:13px">${fmt(s.annualTotalNet)}</td></tr></tfoot></table></div>
   <div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">One-Time Fees</div>
-  <table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#f9fafb"><th style="${th}">Item #</th><th style="${th}">Description</th><th style="${th};text-align:center">Qty</th><th style="${th}">Freq.</th><th style="${thr}">List</th><th style="${thr}">Net</th></tr></thead><tbody>${otR}</tbody><tfoot><tr><td colspan="4" style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">One-Time Total</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700">${fmt(s.implBase+s.mobEnable)}</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#15803d;font-size:13px">${fmt(s.implNet+s.mobEnable)}</td></tr></tfoot></table></div>
+  <table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#f9fafb"><th style="${th}">Item</th><th style="${thr}">Amount</th></tr></thead><tbody>${otR}</tbody><tfoot><tr><td style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">One-Time Total</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#15803d;font-size:13px">${fmt(s.implNet+s.mobEnable)}</td></tr></tfoot></table></div>
   <div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">Discount Summary</div>
   <table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#f9fafb"><th style="${th}">Discount Type</th><th style="${thr}">Rate</th><th style="${thr}">Amount</th></tr></thead><tbody>${discR}</tbody><tfoot><tr><td colspan="2" style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">Total Discounts Applied</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#dc2626;font-size:13px">${fmt(s.totalDiscount)}</td></tr></tfoot></table></div>
   ${comments?`<div style="margin-bottom:1.25rem;background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:0.75rem 1rem"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#92400e;margin-bottom:3px">Notes</div><div style="font-size:12px;color:#78350f">${comments}</div></div>`:""}
-  <div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:10px;padding-top:0.75rem;border-top:1px solid #e5e7eb">K12 Plus Product Purchase Terms</div>${TERMS}</div>
+  <div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:10px;padding-top:0.75rem;border-top:1px solid #e5e7eb">Key Terms Summary</div>${TERMS}</div>
   <div style="border-top:2px solid #1a56db;padding-top:1.25rem">
     <div style="font-size:12px;color:#374151;margin-bottom:1.25rem">By signing below, the parties agree to the terms and pricing outlined in this proposal.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem">
