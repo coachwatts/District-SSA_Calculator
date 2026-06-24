@@ -145,6 +145,9 @@ h1{font-size:17px;font-weight:700;color:#111}
 #pilotCard.active .ct{color:#92400e}
 .pilot-sticky-box{display:none}
 .pilot-sticky-box.show{display:block}
+.prorate-sticky-box{display:none}
+.prorate-sticky-box.show{display:block}
+.prorate-yr-card{flex:0 0 auto;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:6px;padding:5px 10px;min-width:130px}
 .coop-info-row{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
 .coop-info-row .k{color:#6b7280}.coop-info-row .v{font-weight:700;color:#7e22ce}
 .tier-pill-coop{display:inline-flex;align-items:center;background:#fdf4ff;color:#7e22ce;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #e9d5ff}
@@ -417,6 +420,34 @@ h1{font-size:17px;font-weight:700;color:#111}
       <div id="rampStickyYears" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin"></div>
     </div>
   </div>
+  <div class="prorate-sticky-box" id="prorateStickyBox">
+    <div style="background:#f5f3ff;border:2px solid #7c3aed;border-radius:8px;margin-top:10px;padding:0.5rem 0.75rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:14px">📅</span>
+          <span style="font-size:11px;font-weight:700;color:#6d28d9;text-transform:uppercase;letter-spacing:0.05em">Pro-Rated — <span id="prorateStickyMonths">—</span> Months to Alignment</span>
+        </div>
+        <span style="font-size:11px;color:#7c3aed">Aligns to: <strong id="prorateStickyDate">—</strong></span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <div class="prorate-yr-card">
+          <div style="font-size:9px;color:#7c3aed;text-transform:uppercase;font-weight:700">Pro-rated SaaS</div>
+          <div style="font-size:15px;font-weight:700;color:#6d28d9" id="prorateStickyArr">—</div>
+          <div style="font-size:9px;color:#7c3aed" id="prorateStickyPeriod">— months</div>
+        </div>
+        <div class="prorate-yr-card">
+          <div style="font-size:9px;color:#7c3aed;text-transform:uppercase;font-weight:700">Implementation</div>
+          <div style="font-size:15px;font-weight:700;color:#6d28d9" id="prorateStickyImpl">—</div>
+          <div style="font-size:9px;color:#7c3aed">one-time (full)</div>
+        </div>
+        <div class="prorate-yr-card" style="background:#ede9fe;border-color:#7c3aed">
+          <div style="font-size:9px;color:#7c3aed;text-transform:uppercase;font-weight:700">Total at Signing</div>
+          <div style="font-size:15px;font-weight:700;color:#4c1d95" id="prorateStickyTotal">—</div>
+          <div style="font-size:9px;color:#7c3aed">then <span id="prorateStickyRenewal">—</span>/yr</div>
+        </div>
+      </div>
+    </div>
+  </div>
   </div><!-- end sticky-header -->
 
   <div class="card">
@@ -523,6 +554,40 @@ h1{font-size:17px;font-weight:700;color:#111}
         <span>Year 1 Total (full): <strong id="pilotFullYear1">—</strong></span>
         <span>Pilot Fee: <strong id="pilotFeeAmt" style="color:#1a56db">—</strong></span>
         <span>Credits toward Year 1 if converted within window</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="prorateCard">
+    <div class="ramp-toggle-row">
+      <div class="ct" style="margin-bottom:0">Pro-Rated Pricing</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;color:#6b7280">Enable</span>
+        <div class="toggle-sw" id="prorateToggle" onclick="toggleProrate()"></div>
+      </div>
+    </div>
+    <div id="prorateBody" style="display:none">
+      <div style="font-size:11px;color:#6b7280;margin-bottom:10px">Align the contract start to a future renewal date or budget cycle. Pro-rated SaaS = Annual ÷ 12 × months. Implementation fee stays full.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="fg" style="margin-bottom:0">
+          <label>Target Alignment Date</label>
+          <input type="date" id="prorateDate" oninput="onProrateDateChange()" style="padding:5px 8px;border:1px solid #d1d5db;border-radius:5px;font-size:12px">
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <label>Months in Pro-Rated Period</label>
+          <input type="number" id="prorateMonths" value="" min="1" max="11" step="1" placeholder="1–11" oninput="onProrateMonthsChange()" style="padding:5px 8px;border:1px solid #d1d5db;border-radius:5px;font-size:12px;width:80px">
+        </div>
+      </div>
+      <div style="background:#f5f3ff;border-radius:8px;padding:0.75rem;font-size:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div><div style="font-size:10px;color:#7c3aed;font-weight:700;text-transform:uppercase;margin-bottom:2px">Annual Rate</div><div style="font-weight:700;color:#4c1d95" id="prorateFullArr">—</div></div>
+          <div><div style="font-size:10px;color:#7c3aed;font-weight:700;text-transform:uppercase;margin-bottom:2px">Monthly Rate</div><div style="font-weight:700;color:#4c1d95" id="prorateMonthlyRate">—</div></div>
+          <div><div style="font-size:10px;color:#7c3aed;font-weight:700;text-transform:uppercase;margin-bottom:2px">Pro-rated SaaS</div><div style="font-weight:700;color:#4c1d95" id="prorateArr">—</div></div>
+        </div>
+        <div style="border-top:1px solid #ddd6fe;margin-top:8px;padding-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><div style="font-size:10px;color:#7c3aed;font-weight:700;text-transform:uppercase;margin-bottom:2px">Implementation (full)</div><div style="font-weight:700;color:#4c1d95" id="prorateImpl">—</div></div>
+          <div style="background:#ede9fe;border-radius:5px;padding:4px 8px"><div style="font-size:10px;color:#7c3aed;font-weight:700;text-transform:uppercase;margin-bottom:2px">Total at Signing</div><div style="font-size:15px;font-weight:700;color:#4c1d95" id="prorateTotal">—</div></div>
+        </div>
       </div>
     </div>
   </div>
@@ -776,6 +841,7 @@ function calc(){
   st={e,tier,rc,term,mOpt,mobFee,mobEnable,implNet,implBase,implIncl,saasGross,saasNet,annualNet,year1,totalDiscount,totalSaasDisc,rows,termDisc,termPct,sDisc,cDisc,eDisc,sPct,cPct,ePct,iPct,iDisc,bundleInfo,bundleDisc,modCount:selMods.length,annualTotalNet:annualNet};
   if(document.getElementById('rampCard') && document.getElementById('rampCard').style.display==='block') renderRampTable();
   if(pilotEnabled) renderPilot();
+  if(prorateEnabled) renderProrate();
   const mEnRow=document.getElementById('mobileEnableRow');
   if(mEnRow) mEnRow.style.display=document.getElementById('mobile').value==='none'?'none':'flex';
 }
@@ -915,6 +981,28 @@ function showCoopProposal(){
     </div>
   </div>` : ''}
 
+  \${prorateEnabled && getProrateState() ? (()=>{
+    const pr=getProrateState();
+    const startDate=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const alignDate=pr.dateVal?new Date(pr.dateVal+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+    return \`<div style="margin-bottom:1.25rem;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:0.9rem 1.1rem">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#6d28d9;margin-bottom:8px">Pro-Rated Initial Term</div>
+    <div style="font-size:12px;color:#374151;line-height:1.8;margin-bottom:8px">
+      Contract starts <strong>\${startDate}</strong> and runs for <strong>\${pr.months} month\${pr.months===1?'':'s'}</strong> to align with the renewal date of <strong>\${alignDate}</strong>. Full annual pricing begins on that date.
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:#ede9fe"><th style="\${th}">Item</th><th style="\${thr}">Amount</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:7px 10px;border-bottom:1px solid #ede9fe">Pro-Rated SaaS (\${pr.months} of 12 months @ \${fmt(pr.fullArr)}/yr)</td><td style="padding:7px 10px;border-bottom:1px solid #ede9fe;text-align:right;font-weight:700">\${fmt(pr.prorateArr)}</td></tr>
+        \${pr.oneTime>0?\`<tr><td style="padding:7px 10px;border-bottom:1px solid #ede9fe">Implementation &amp; Onboarding (one-time)</td><td style="padding:7px 10px;border-bottom:1px solid #ede9fe;text-align:right;font-weight:700">\${fmt(pr.oneTime)}</td></tr>\`:''}
+      </tbody>
+      <tfoot><tr style="background:#ede9fe"><td style="padding:7px 10px;font-weight:700">Total at Signing</td><td style="padding:7px 10px;text-align:right;font-weight:700;color:#4c1d95;font-size:13px">\${fmt(pr.total)}</td></tr></tfoot>
+    </table>
+    <div style="margin-top:8px;font-size:11px;color:#6d28d9;background:#ede9fe;border-radius:5px;padding:6px 10px">
+      ↻ Renews annually at <strong>\${fmt(pr.fullArr)}/year</strong> beginning \${alignDate}
+    </div>
+  </div>\`;
+  })() : ''}
   <div style="margin-bottom:1.25rem">
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">Recurring Annual Fees</div>
     <table style="width:100%;border-collapse:collapse;font-size:12px">
@@ -1092,6 +1180,28 @@ function showProposal(){
       If ${currentMode==='coop'?'the co-op':'the district'} signs a full annual agreement within <strong>${document.getElementById('pilotWindow').value} days</strong> of pilot start, the full pilot fee will be credited toward Year 1 cost.
     </div>
   </div>` : ''}
+  \${prorateEnabled && getProrateState() ? (()=>{
+    const pr=getProrateState();
+    const startDate=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const alignDate=pr.dateVal?new Date(pr.dateVal+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+    return \`<div style="margin-bottom:1.25rem;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:0.9rem 1.1rem">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#6d28d9;margin-bottom:8px">Pro-Rated Initial Term</div>
+    <div style="font-size:12px;color:#374151;line-height:1.8;margin-bottom:8px">
+      Contract starts <strong>\${startDate}</strong> and runs for <strong>\${pr.months} month\${pr.months===1?'':'s'}</strong> to align with the renewal date of <strong>\${alignDate}</strong>. Full annual pricing begins on that date.
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:#ede9fe"><th style="\${th}">Item</th><th style="\${thr}">Amount</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:7px 10px;border-bottom:1px solid #ede9fe">Pro-Rated SaaS (\${pr.months} of 12 months @ \${fmt(pr.fullArr)}/yr)</td><td style="padding:7px 10px;border-bottom:1px solid #ede9fe;text-align:right;font-weight:700">\${fmt(pr.prorateArr)}</td></tr>
+        \${pr.oneTime>0?\`<tr><td style="padding:7px 10px;border-bottom:1px solid #ede9fe">Implementation &amp; Onboarding (one-time)</td><td style="padding:7px 10px;border-bottom:1px solid #ede9fe;text-align:right;font-weight:700">\${fmt(pr.oneTime)}</td></tr>\`:''}
+      </tbody>
+      <tfoot><tr style="background:#ede9fe"><td style="padding:7px 10px;font-weight:700">Total at Signing</td><td style="padding:7px 10px;text-align:right;font-weight:700;color:#4c1d95;font-size:13px">\${fmt(pr.total)}</td></tr></tfoot>
+    </table>
+    <div style="margin-top:8px;font-size:11px;color:#6d28d9;background:#ede9fe;border-radius:5px;padding:6px 10px">
+      ↻ Renews annually at <strong>\${fmt(pr.fullArr)}/year</strong> beginning \${alignDate}
+    </div>
+  </div>\`;
+  })() : ''}
   <div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">Recurring Annual Fees</div>
   <table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#f9fafb"><th style="${th}">Item</th><th style="${th};text-align:center">Quantity</th><th style="${th}">Billing</th><th style="${thr}">Annual Price</th></tr></thead><tbody>${annR}</tbody><tfoot><tr><td colspan="3" style="padding:7px 10px;border-top:1px solid #e5e7eb;font-weight:700">Annual Total (net)</td><td style="padding:7px 10px;border-top:1px solid #e5e7eb;text-align:right;font-weight:700;color:#1a56db;font-size:13px">${fmt(s.annualTotalNet)}</td></tr></tfoot></table></div>
   <div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#111;margin-bottom:7px">One-Time Fees</div>
@@ -1664,6 +1774,7 @@ function calcCoop(){
   coopSt={co,rc,term,implIncl,discPct,termPct,base,perStu,gross,discBase,annualArr,implFee:implFeeNet,year1,totalDiscAmt,aeDiscAmt,termDiscAmt,maxDisc,overMax,coopSDisc,coopIDiscAmt};
   if(document.getElementById('rampCard') && document.getElementById('rampCard').style.display==='block') renderRampTable();
   if(pilotEnabled) renderPilot();
+  if(prorateEnabled) renderProrate();
   const mEnRow=document.getElementById('mobileEnableRow');
   if(mEnRow) mEnRow.style.display=document.getElementById('mobile').value==='none'?'none':'flex';
 }
@@ -2000,6 +2111,13 @@ function togglePilot(){
   document.getElementById('pilotBody').style.display = pilotEnabled ? 'block' : 'none';
   document.getElementById('pilotCard').classList.toggle('active', pilotEnabled);
   document.getElementById('pilotStickyBox').classList.toggle('show', pilotEnabled);
+  // Mutually exclusive with prorate
+  if(pilotEnabled && prorateEnabled){
+    prorateEnabled = false;
+    document.getElementById('prorateToggle').classList.remove('on');
+    document.getElementById('prorateBody').style.display = 'none';
+    document.getElementById('prorateStickyBox').classList.remove('show');
+  }
   // Mutually exclusive with ramp — pilots are short-term, ramps are multi-year
   if(pilotEnabled && rampEnabled){
     rampEnabled = false;
@@ -2038,6 +2156,117 @@ function getPilotState(){
   const full = getFullYear1();
   const fee = full * (pct/100);
   return {length, pct, window, full, fee};
+}
+
+// ═══════════════════════════════════════════════════════════
+// PRO-RATED PRICING
+// ═══════════════════════════════════════════════════════════
+let prorateEnabled = false;
+
+function toggleProrate(){
+  prorateEnabled = !prorateEnabled;
+  document.getElementById('prorateToggle').classList.toggle('on', prorateEnabled);
+  document.getElementById('prorateBody').style.display = prorateEnabled ? 'block' : 'none';
+  document.getElementById('prorateStickyBox').classList.toggle('show', prorateEnabled);
+  // Mutually exclusive with pilot
+  if(prorateEnabled && pilotEnabled){
+    pilotEnabled = false;
+    document.getElementById('pilotToggle').classList.remove('on');
+    document.getElementById('pilotBody').style.display = 'none';
+    document.getElementById('pilotCard').classList.remove('active');
+    document.getElementById('pilotStickyBox').classList.remove('show');
+  }
+  if(prorateEnabled){
+    // Default alignment date to next Sep 1
+    if(!document.getElementById('prorateDate').value){
+      const today = new Date();
+      let sep1 = new Date(today.getFullYear(), 8, 1); // Sep 1 this year
+      if(sep1 <= today) sep1 = new Date(today.getFullYear()+1, 8, 1);
+      document.getElementById('prorateDate').value = sep1.toISOString().slice(0,10);
+    }
+    onProrateDateChange();
+  } else {
+    clearProrateSticky();
+  }
+}
+
+function clearProrateSticky(){
+  ['prorateStickyArr','prorateStickyImpl','prorateStickyTotal',
+   'prorateStickyMonths','prorateStickyDate','prorateStickyRenewal',
+   'prorateStickyPeriod'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent='—';
+  });
+}
+
+function getMonthsBetween(from, to){
+  // Returns number of full+partial months between two dates, rounded to nearest 0.5
+  const months = (to.getFullYear()-from.getFullYear())*12 + (to.getMonth()-from.getMonth());
+  const dayFrac = (to.getDate()-from.getDate())/30;
+  const raw = Math.max(1, Math.min(11, Math.round((months+dayFrac)*2)/2));
+  return raw;
+}
+
+function onProrateDateChange(){
+  const dateVal = document.getElementById('prorateDate').value;
+  if(!dateVal) return;
+  const target = new Date(dateVal);
+  const today  = new Date();
+  today.setHours(0,0,0,0);
+  if(target <= today){ renderProrate(); return; }
+  const months = getMonthsBetween(today, target);
+  document.getElementById('prorateMonths').value = months;
+  renderProrate();
+}
+
+function onProrateMonthsChange(){
+  const months = parseFloat(document.getElementById('prorateMonths').value)||0;
+  if(months < 1 || months > 11) return;
+  // Update date to match months from today
+  const today = new Date();
+  const target = new Date(today);
+  target.setMonth(target.getMonth() + Math.round(months));
+  // Set to first of that month for clean alignment
+  target.setDate(1);
+  document.getElementById('prorateDate').value = target.toISOString().slice(0,10);
+  renderProrate();
+}
+
+function getProrateState(){
+  if(!prorateEnabled) return null;
+  const months   = parseFloat(document.getElementById('prorateMonths').value)||0;
+  const dateVal  = document.getElementById('prorateDate').value;
+  const fullArr  = currentMode==='coop' ? (coopSt.annualArr||0) : (st.annualTotalNet||0);
+  const implAmt  = currentMode==='coop' ? (coopSt.implFee||0)
+                                         : (st.implIncl ? (st.implNet||0) : 0);
+  const mobEnable= currentMode==='coop' ? 0 : (st.mobEnable||0);
+  const oneTime  = implAmt + mobEnable;
+  const monthly  = fullArr / 12;
+  const prorateArr = Math.round(monthly * months);
+  const total    = prorateArr + oneTime;
+  return { months, dateVal, fullArr, implAmt, mobEnable, oneTime, monthly, prorateArr, total };
+}
+
+function renderProrate(){
+  if(!prorateEnabled) return;
+  const p = getProrateState();
+  if(!p) return;
+
+  // Card display
+  document.getElementById('prorateFullArr').textContent   = fmtC(p.fullArr);
+  document.getElementById('prorateMonthlyRate').textContent = fmtC(p.monthly) + '/mo';
+  document.getElementById('prorateArr').textContent        = fmtC(p.prorateArr);
+  document.getElementById('prorateImpl').textContent       = p.oneTime>0 ? fmtC(p.oneTime) : '—';
+  document.getElementById('prorateTotal').textContent      = fmtC(p.total);
+
+  // Sticky bar
+  document.getElementById('prorateStickyMonths').textContent = p.months % 1 === 0 ? p.months : p.months.toFixed(1);
+  document.getElementById('prorateStickyDate').textContent   = p.dateVal ? new Date(p.dateVal+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+  document.getElementById('prorateStickyArr').textContent    = fmtC(p.prorateArr);
+  document.getElementById('prorateStickyImpl').textContent   = p.oneTime>0 ? fmtC(p.oneTime) : 'Waived';
+  document.getElementById('prorateStickyTotal').textContent  = fmtC(p.total);
+  document.getElementById('prorateStickyPeriod').textContent = p.months + (p.months===1?' month':' months');
+  document.getElementById('prorateStickyRenewal').textContent= fmtC(p.fullArr);
 }
 
 function toggleAcc(id){
